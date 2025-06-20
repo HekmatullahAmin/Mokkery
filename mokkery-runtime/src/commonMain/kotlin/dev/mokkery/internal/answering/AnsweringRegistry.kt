@@ -18,8 +18,12 @@ import dev.mokkery.internal.context.associatedFunctions
 import dev.mokkery.internal.context.mockSpec
 import dev.mokkery.internal.context.toCallTrace
 import dev.mokkery.internal.context.tools
+import dev.mokkery.internal.mokkeryScope
 import dev.mokkery.internal.names.shortToString
+import dev.mokkery.internal.requireInstanceScope
+import dev.mokkery.internal.utils.MocksCollection
 import dev.mokkery.matcher.capture.Capture
+import dev.mokkery.self
 import kotlinx.atomicfu.atomic
 
 internal interface AnsweringRegistry : MokkeryContext.Element {
@@ -66,7 +70,7 @@ private class AnsweringRegistryImpl : AnsweringRegistry {
         if (modifiers.value > 0) throw ConcurrentTemplatingException()
         val trace = scope.toCallTrace(0)
         val answers = this._answers
-        val callMatcher = scope.tools.callMatcher
+        val callMatcher = scope.tools.callMatcherFactory.create(MocksCollection(listOf(scope.self.requireInstanceScope())))
         return answers
             .keys
             .reversed()
